@@ -7,9 +7,9 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <div id="game">
         <div class="grid">
+            <!-- Første rad med bokser -->
             <div class="box"></div>
             <div class="box"></div>
             <div class="box"></div>
@@ -17,39 +17,97 @@
             <div class="box"></div>
         </div>
     </div>
-    <script>
 
+    <script>
+        const state = {
+            grid: Array(6)
+                .fill()
+                .map(() => Array(5).fill('')), // Lager en 6x5 grid med tomme verdier
+            currentRow: 0,
+            currentCol: 0,
+        };
+
+        // Oppdaterer boksene med verdier fra state.grid
+        function updateGrid() {
+            for (let i = 0; i < state.grid.length; i++) {
+                for (let j = 0; j < state.grid[i].length; j++) { // Rettet: state.grid[i].length
+                    const box = document.getElementById(`box${i}${j}`); // Rettet: riktig metode
+                    if (box) {
+                        box.textContent = state.grid[i][j];
+                    }
+                }
+            }
+        }
+
+        // Tegner en enkel boks
         function drawbox(container, row, col, letter = '') {
             const box = document.createElement('div');
             box.className = 'box';
-            box.id = `box${row}${col}`;
+            box.id = `box${row}${col}`; // Unik ID for hver boks
             box.textContent = letter;
 
             container.appendChild(box);
             return box;
         }
 
+        // Tegner hele griden med 6 rader og 5 kolonner
         function drawGrid(container) {
             const grid = document.createElement('div');
             grid.className = 'grid';
 
             for (let i = 0; i < 6; i++) { // 6 rader
                 for (let j = 0; j < 5; j++) { // 5 kolonner
-                    drawbox(grid, i, j);
+                    drawbox(grid, i, j); // Tegner en ny boks
                 }
             }
 
             container.appendChild(grid);
         }
 
-        function startup() {
-            const game = document.getElementById('game');
-            drawGrid(game);
+        function registerKeyboardEvents() {
+            document.body.onkeydown = (e) => {
+                const key = e.key;
+                if (key==='Enter') {
+                    if (state.currentCol===5) {
+                        const word = getCurrentWord();
+                        if (isWordValid(word)) {
+                            revealWord(word);
+                        }
+                    }
+
+                }
+
+                if (key==='Backspace') {
+
+                }
+
+                if (isLetter(key)) {
+
+                }
+
+                updateGrid();
+
+            };
         }
 
-        startup();
+        // Starter spillet
+        function startup() {
+            const game = document.getElementById('game');
+            drawGrid(game); // Tegner grid
+
+            registerKeyboardEvents();
+            updateGrid(); // Oppdaterer grid med state-verdier
+        }
+
+        // Oppdaterer state og fyller bokstav 'A' i hele griden
+        state.grid = Array(6)
+            .fill()
+            .map(() => Array(5).fill('A'));
+
+        startup(); // Starter programmet
     </script>
 </body>
 </html>
+
 
 
