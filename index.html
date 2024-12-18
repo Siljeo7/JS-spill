@@ -72,21 +72,22 @@
                         const word = getCurrentWord();
                         if (isWordValid(word)) {
                             revealWord(word);
+                            state.currentRow++;
+                            state.currentCol=0;
+                        }
+                        else{
+                            alert('not a valid word.');
                         }
                     }
-
                 }
-
+                
                 if (key==='Backspace') {
-
                 }
 
                 if (isLetter(key)) {
-
                 }
 
                 updateGrid();
-
             };
         }
 
