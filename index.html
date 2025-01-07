@@ -9,14 +9,14 @@
 <body>
 
     <div id="container">
-        <h1>WORDLE</h1>
+        <h1>CAFE WORDLE</h1>
         <div id="game"></div>
     </div>
  
 
 
     <script>
-        const dictionary = ['earth', 'plane', 'crane', 'audio', 'house'];
+        const dictionary = ['bilde', 'kilde', 'mamma', 'ramme', 'pappa', 'skole', 'flagg', 'minne', 'pinne', 'sinne', 'finne', 'solen', 'glass', 'hylle', 'flass', 'bamse', 'reise', 'lykke', 'veske', 'væske', 'kveld', 'fjell', 'farge', 'lilla', 'pille', 'danse', 'bukse', 'lampe',  'piano', 'gitar', 'tappe', 'farge', 'fiske', 'haste', 'høste', 'laste', 'pynte', ];
         const state = {
             secret: dictionary[Math.floor(Math.random() * dictionary.length)],
             grid: Array(6).fill().map(() => Array(5).fill('')),
