@@ -7,59 +7,47 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="game">
-        <div class="grid">
-            <!-- Første rad med bokser -->
-            <div class="box"></div>
-            <div class="box"></div>
-            <div class="box"></div>
-            <div class="box"></div>
-            <div class="box"></div>
-        </div>
+
+    <div id="container">
+        <h1>WORDLE</h1>
+        <div id="game"></div>
     </div>
+ 
+
 
     <script>
         const dictionary = ['earth', 'plane', 'crane', 'audio', 'house'];
         const state = {
             secret: dictionary[Math.floor(Math.random() * dictionary.length)],
-            grid: Array(6)
-                .fill()
-                .map(() => Array(5).fill('')), // Lager en 6x5 grid med tomme verdier
+            grid: Array(6).fill().map(() => Array(5).fill('')),
             currentRow: 0,
             currentCol: 0,
         };
 
-        // Oppdaterer boksene med verdier fra state.grid
         function updateGrid() {
             for (let i = 0; i < state.grid.length; i++) {
-                for (let j = 0; j < state.grid[i].length; j++) { // Rettet: state.grid[i].length
-                    const box = document.getElementById(`box${i}${j}`); // Rettet: riktig metode
-                    if (box) {
-                        box.textContent = state.grid[i][j];
-                    }
+                for (let j = 0; j < state.grid[i].length; j++) {
+                    const box = document.getElementById(`box${i}${j}`);
+                    box.textContent = state.grid[i][j];
                 }
             }
         }
 
-        // Tegner en enkel boks
-        function drawbox(container, row, col, letter = '') {
+        function drawBox(container, row, col) {
             const box = document.createElement('div');
             box.className = 'box';
-            box.id = `box${row}${col}`; // Unik ID for hver boks
-            box.textContent = letter;
-
+            box.id = `box${row}${col}`;
             container.appendChild(box);
-            return box;
         }
 
-        // Tegner hele griden med 6 rader og 5 kolonner
-        function drawGrid(container) {
+        function drawGrid() {
+            const container = document.getElementById('game');
             const grid = document.createElement('div');
             grid.className = 'grid';
 
-            for (let i = 0; i < 6; i++) { // 6 rader
-                for (let j = 0; j < 5; j++) { // 5 kolonner
-                    drawbox(grid, i, j); // Tegner en ny boks
+            for (let i = 0; i < 6; i++) {
+                for (let j = 0; j < 5; j++) {
+                    drawBox(grid, i, j);
                 }
             }
 
@@ -69,66 +57,24 @@
         function registerKeyboardEvents() {
             document.body.onkeydown = (e) => {
                 const key = e.key;
-                if (key==='Enter') {
-                    if (state.currentCol===5) {
-                        const word = getCurrentWord();
-                        if (isWordValid(word)) {
-                            revealWord(word);
+                if (key === 'Enter') {
+                    if (state.currentCol === 5) {
+                        const guess = state.grid[state.currentRow].join('');
+                        if (dictionary.includes(guess)) {
+                            revealWord(guess);
                             state.currentRow++;
-                            state.currentCol=0;
-                        }
-                        else{
-                            alert('not a valid word.');
+                            state.currentCol = 0;
+                        } else {
+                            alert('Not a valid word');
                         }
                     }
-                }
-                
-                if (key==='Backspace') {
-                }
-
-                if (isLetter(key)) {
+                } else if (key === 'Backspace') {
+                    removeLetter();
+                } else if (isLetter(key)) {
                     addLetter(key);
                 }
-
                 updateGrid();
             };
-        }
-
-        function getCurrentWord(){
-            return state.grid[state.currentRow].reduce((prev, curr) => prev + curr);
-        }
-
-        function isWordValid(word) {
-            return dictionary.includes(word);
-        }
-
-        function revealWord(guess) {
-            const row = state.currentRow;
-
-            for (let i = 0; i < 5; i++) {
-                const box = document.getElementById(`box${row}${i}`);
-                const letter = box.textContent;
-
-                if (letter === state.secret[i]) {
-                    box.classList.add('right');
-                }
-                else if (state.secret.includes(letter)){
-                    box.classList.add('wrong');
-                }
-                else{
-                    box.classList.add('empty');
-                }
-            }
-
-            const isWinner = state.secret === guess;
-            const isGameOver = state.currentRow === 5;
-
-            if (isWinner){
-                alert('congratulations!');
-            }
-            else if (isGameOver) {
-                alert(`better luck next time! The word was ${state.secret}.`);
-            }
         }
 
         function isLetter(key) {
@@ -136,34 +82,68 @@
         }
 
         function addLetter(letter) {
-            if (state.currentCol === 5) return;
-            state.grid[state.currentRow][state.currentCol] = letter;
-            state.currentCol++;
+            if (state.currentCol < 5) {
+                state.grid[state.currentRow][state.currentCol] = letter;
+                state.currentCol++;
+            }
         }
 
         function removeLetter() {
-            if (state.currentCol === 0) return;
-            state.grid[state.currentRow][state.currentCol - 1] = '';
-            state.currentCol--;
+            if (state.currentCol > 0) {
+                state.currentCol--;
+                state.grid[state.currentRow][state.currentCol] = '';
+            }
         }
 
-        // Starter spillet
+        function revealWord(guess) {
+        const row = state.currentRow;
+
+        if (guess === state.secret) {
+            // Marker alle boksene som riktige
+            for (let i = 0; i < 5; i++) {
+                const box = document.getElementById(`box${row}${i}`);
+                box.classList.add('riktig');
+            }
+
+            // Vent litt for å la fargene oppdatere før meldingen vises
+            setTimeout(() => {
+                alert('Gratulerer! Du gjettet det riktige ordet!');
+            }, 200); // 200ms forsinkelse
+
+            return; // Avslutt funksjonen fordi spillet er vunnet
+        }
+
+        // Hvis ordet ikke er riktig, sjekk hver bokstav
+        for (let i = 0; i < 5; i++) {
+            const box = document.getElementById(`box${row}${i}`);
+            const letter = guess[i];
+
+            if (state.secret[i] === letter) {
+                box.classList.add('riktig');
+            } else if (state.secret.includes(letter)) {
+                box.classList.add('nesten');
+            } else {
+                box.classList.add('tom');
+            }
+        }
+
+        // Sjekk om det er game over
+        if (state.currentRow === 5) {
+            setTimeout(() => {
+                alert(`Game over! Ordet var "${state.secret}".`);
+            }, 200);
+        }
+    }
+
+
+
         function startup() {
-            const game = document.getElementById('game');
-            drawGrid(game); // Tegner grid
-
+            drawGrid();
             registerKeyboardEvents();
-
-            console.log(state.secret);
+            console.log(`Secret word: ${state.secret}`);
         }
-    
 
-        startup(); // Starter programmet
-
-
+        startup();
     </script>
 </body>
 </html>
-
-
-

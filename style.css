@@ -1,5 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap');
 
 * {
     margin: 0;
@@ -8,16 +7,17 @@
     font-family: "Roboto Condensed", sans-serif;
 }
 
-img {
-    width: 100%;
-}
-
-:root{
-    --gul: #b59f3bff;
-    --grå: #3a3a3cff;
-    --grønn: #538d4eff;
-    --svart: #000000ff;
-    --hvit: #ffffffff;
+:root {
+    --gul: #b59f3b;
+    --grønn: #538d4e;
+    --grå: #3a3a3c;
+    --svart: #000;
+    --hvit: #fff;
+    --rosa: #c96480ff;
+    --lysrosa: #cd778dff;
+    --lysgrønn: #cddfa0ff;
+    --blå: #aac6daff;
+    --babyrosa: #dda6b3ff;
 }
 
 body {
@@ -25,44 +25,58 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: var(--svart);
+    background-color: var(--lysrosa);
+    flex-direction: column; 
+    margin: 0;
 }
 
-#game{
+#container {
+    text-align: center; 
+}
+
+h1{
+    color: var(--hvit); 
+    font-size: 60px; 
+    margin-bottom: 40px;
+}
+
+#game {
     display: grid;
     place-items: center;
     width: 100%;
-    height: 600px;
 }
 
-.grid{
+.grid {
     display: grid;
     grid-template-rows: repeat(6, auto);
     grid-template-columns: repeat(5, auto);
 }
 
-.box{
+.box {
     width: 60px;
     height: 60px;
-    border: 2px solid var(--grå);
+    border: 2px solid var(--hvit);
     margin: 4px;
     color: var(--hvit);
     text-transform: uppercase;
     display: grid;
     place-items: center;
     font-size: 30px;
+    font-weight: bold;
+    transition: background-color 0.5s ease, border-color 0.5s ease;
 }
 
-.box.nøytral{
-    background-color: var(--hvit);
+.box.riktig {
+    background-color: var(--lysgrønn);
+    border-color: var(--lysgrønn);
 }
 
-.box.nesten{
-    background-color: var(--grønn);
-
+.box.nesten {
+    background-color: var(--blå);
+    border-color: var(--blå);
 }
 
-.box.riktig{
-    background-color: var(--gul);
-    
+.box.tom {
+    background-color: var(--babyrosa);
+    border-color: var(--babyrosa);
 }
