@@ -8,15 +8,32 @@
 </head>
 <body>
 
-    <div id="container">
-        <h1>CAFE WORDLE</h1>
-        <div id="game"></div>
-    </div>
- 
+
+    <main>
+        <div class="side"> 
+            <div class="farge1">
+                <div id="grønn"></div>
+                <p>Riktig bokstav, riktig plassering</p>
+            </div>
+            <div class="farge2">
+                <div id="blå"></div>
+                <p>Riktig bokstav, feil plassering</p>
+            </div>
+            <div class="farge3">
+                <div id="rosa"></div>
+                <p>Feil bokstav</p>
+            </div>
+        </div>
+    
+        <div class="container">
+            <h1>SOMMER WORDLE</h1>
+            <div id="game"></div>
+        </div>
+    </main> 
 
 
     <script>
-        const dictionary = ['bilde', 'kilde', 'mamma', 'ramme', 'pappa', 'skole', 'flagg', 'minne', 'pinne', 'sinne', 'finne', 'solen', 'glass', 'hylle', 'flass', 'bamse', 'reise', 'lykke', 'veske', 'væske', 'kveld', 'fjell', 'farge', 'lilla', 'pille', 'danse', 'bukse', 'lampe',  'piano', 'gitar', 'tappe', 'farge', 'fiske', 'haste', 'høste', 'laste', 'pynte', ];
+        const dictionary = ['solen', 'drue', 'dusje', 'drikk', 'havet', 'padle', 'bader', 'grønn', 'ferie', 'varme', 'bølge', 'syden', 'kjole', 'grill', 'farge', 'dykke', 'hytte', 'glass', 'reise', 'lykke', 'chill', 'båter', 'palme', 'flipp', 'flapp', 'skjær', 'fjell', 'danse', 'lilla', 'minne', 'kjøre', 'fiske', 'bilde', 'sushi', 'pizza', 'pasta', 'reker', 'ringe', 'penge', 'betal', 'jobbe', 'pynte', 'hvile', 'pause', 'sover', 'kadda', 'vanne', 'anker', 'stein', 'skjell', 'kreps', 'godis', 'kreta', 'drink', 'måned', 'paris', 'porto', 'split', 'naxos', 'koser', 'malta', 'dubai', 'qatar', 'kenya', 'milan', 'lagos', 'siena',  ];
         const state = {
             secret: dictionary[Math.floor(Math.random() * dictionary.length)],
             grid: Array(6).fill().map(() => Array(5).fill('')),
