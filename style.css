@@ -25,9 +25,9 @@ body {
     flex-direction: column;
     height: 100vh;
     background-color: var(--lysrosa);
-    background: 
-    linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
-    url('palme.jpg'); 
+    background:
+        linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+        url('palme.jpg');
     background-size: cover;
     background-position: center;
 }
@@ -46,7 +46,7 @@ h1 {
     font-family: "Pacifico", serif;
     margin-top: -70px;
     margin-bottom: 50px;
-    
+
 }
 
 .side {
@@ -62,7 +62,7 @@ h1 {
 }
 
 
-.farge1{
+.farge1 {
     display: flex;
     align-items: center;
 }
@@ -73,7 +73,7 @@ h1 {
     background-color: var(--lysgrønn);
 }
 
-.farge2{
+.farge2 {
     display: flex;
     align-items: center;
 }
@@ -84,7 +84,7 @@ h1 {
     background-color: var(--blå);
 }
 
-.farge3{
+.farge3 {
     display: flex;
     align-items: center;
 }
@@ -95,7 +95,7 @@ h1 {
     background-color: var(--babyrosa);
 }
 
-p{
+p {
     margin: 30px;
     font-size: 20px;
 }
@@ -131,9 +131,20 @@ p{
     text-transform: uppercase;
 }
 
-.box.riktig { background-color: var(--lysgrønn); border: none; }
-.box.nesten { background-color: var(--blå); border: none;}
-.box.tom { background-color: var(--babyrosa); border: none;}
+.box.riktig {
+    background-color: var(--lysgrønn);
+    border: none;
+}
+
+.box.nesten {
+    background-color: var(--blå);
+    border: none;
+}
+
+.box.tom {
+    background-color: var(--babyrosa);
+    border: none;
+}
 
 .keyboard-container {
     width: 300px;
@@ -171,12 +182,21 @@ p{
 }
 
 .key:last-child {
-    grid-column: span 2; /* Fyller to kolonner på nederste rad */
+    grid-column: span 2;
+    /* Fyller to kolonner på nederste rad */
 }
 
-.key.riktig { background-color: var(--lysgrønn); }
-.key.nesten { background-color: var(--blå); }
-.key.tom { background-color: var(--babyrosa); }
+.key.riktig {
+    background-color: var(--lysgrønn);
+}
+
+.key.nesten {
+    background-color: var(--blå);
+}
+
+.key.tom {
+    background-color: var(--babyrosa);
+}
 
 .key:hover {
     background-color: var(--grå);

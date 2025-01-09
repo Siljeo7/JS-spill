@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wordle</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <main>
-        <div class="side"> 
+        <div class="side">
             <div class="farge1">
                 <div id="grønn"></div>
                 <p>Riktig bokstav, riktig plassering</p>
@@ -22,7 +24,7 @@
                 <p>Feil bokstav</p>
             </div>
         </div>
-        
+
         <!-- Spillområdet -->
         <div class="container">
             <h1>SOMMER WORDLE</h1>
@@ -101,8 +103,8 @@
                     updateGrid();
                 }
             }
-        };      
-        
+        };
+
         function drawKeyboard() {
             const keyboard = document.getElementById('keyboard');
             const rows = ['abcdef', 'ghijkl', 'mnopqr', 'stuvwx', 'yzæøå'];
@@ -231,4 +233,5 @@
         startup();
     </script>
 </body>
+
 </html>
