@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');
 
 * {
     margin: 0;
@@ -15,6 +15,7 @@
     --lysgrønn: #cddfa0ff;
     --grå: #6a6a6a;
     --hvit: #fff;
+    --lysrosa: #cd778dff;
 }
 
 body {
@@ -23,7 +24,12 @@ body {
     align-items: center;
     flex-direction: column;
     height: 100vh;
-    background-color: var(--rosa);
+    background-color: var(--lysrosa);
+    background: 
+    linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+    url('palme.jpg'); 
+    background-size: cover;
+    background-position: center;
 }
 
 main {
@@ -37,6 +43,10 @@ h1 {
     color: var(--hvit);
     font-size: 50px;
     margin-bottom: 30px;
+    font-family: "Pacifico", serif;
+    margin-top: -70px;
+    margin-bottom: 50px;
+    
 }
 
 .side {
@@ -48,6 +58,7 @@ h1 {
     width: 300px;
     height: 350px;
     text-align: center;
+    margin-top: 40px;
 }
 
 
@@ -120,9 +131,9 @@ p{
     text-transform: uppercase;
 }
 
-.box.riktig { background-color: var(--lysgrønn); }
-.box.nesten { background-color: var(--blå); }
-.box.tom { background-color: var(--babyrosa); }
+.box.riktig { background-color: var(--lysgrønn); border: none; }
+.box.nesten { background-color: var(--blå); border: none;}
+.box.tom { background-color: var(--babyrosa); border: none;}
 
 .keyboard-container {
     width: 300px;
@@ -131,13 +142,13 @@ p{
     align-items: center;
     flex-direction: column;
     gap: 10px;
-    margin-left: 50px;
+    margin-left: 30px;
 }
 
 #keyboard {
     display: grid;
     grid-template-columns: repeat(6, 70px);
-    gap: 5px;
+    gap: 10px;
     justify-content: center;
     justify-items: center;
     margin-top: 10px;
@@ -159,6 +170,9 @@ p{
     transition: background-color 0.3s ease;
 }
 
+.key:last-child {
+    grid-column: span 2; /* Fyller to kolonner på nederste rad */
+}
 
 .key.riktig { background-color: var(--lysgrønn); }
 .key.nesten { background-color: var(--blå); }

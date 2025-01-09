@@ -46,6 +46,7 @@
 
         function drawGrid() {
             const container = document.getElementById('game');
+            container.innerHTML = '';
             const grid = document.createElement('div');
             grid.className = 'grid';
             for (let i = 0; i < 6; i++) {
@@ -57,34 +58,7 @@
                 }
             }
             container.appendChild(grid);
-        }
-
-        function drawKeyboard() {
-            const keyboard = document.getElementById('keyboard');
-            const rows = ['abcdef', 'ghijkl', 'mnopqr', 'stuvwx', 'yzæøå'];
-
-            // Tegn bokstaver
-            rows.forEach(row => {
-                row.split('').forEach(key => {
-                    const keyElement = document.createElement('div');
-                    keyElement.textContent = key;
-                    keyElement.className = 'key';
-                    keyElement.id = `key-${key}`;
-                    keyboard.appendChild(keyElement);
-                });
-
-                const spacer = document.createElement('div');
-                spacer.style.gridColumn = 'span 6';
-                spacer.style.height = '10px';
-                keyboard.appendChild(spacer);
-            });
-
-            // Legg til en 'Backspace' knapp
-            const backspaceKey = document.createElement('div');
-            backspaceKey.textContent = '⌫';
-            backspaceKey.className = 'key';
-            backspaceKey.id = 'key-backspace';
-            keyboard.appendChild(backspaceKey);
+            updateGrid();
         }
 
         function updateGrid() {
@@ -95,6 +69,69 @@
                 }
             }
         }
+
+        document.body.onkeydown = (e) => {
+            console.log(`Tast trykket: ${e.key}`);
+            const key = e.key.toLowerCase();
+
+            if (key === 'enter') {
+                // Send inn raden hvis den er full
+                if (state.currentCol === 5) {
+                    const guess = state.grid[state.currentRow].join('');
+                    if (dictionary.includes(guess)) {
+                        revealWord(guess);
+                        state.currentRow++;
+                        state.currentCol = 0;
+                    } else {
+                        alert('Ikke et gyldig ord');
+                    }
+                }
+            } else if (key === 'backspace') {
+                // Slett siste bokstav
+                if (state.currentCol > 0) {
+                    state.currentCol--;
+                    state.grid[state.currentRow][state.currentCol] = '';
+                    updateGrid();
+                }
+            } else if (key.length === 1 && key.match(/[a-å]/i)) {
+                // Legg til bokstav hvis det er plass
+                if (state.currentCol < 5) {
+                    state.grid[state.currentRow][state.currentCol] = key;
+                    state.currentCol++;
+                    updateGrid();
+                }
+            }
+        };      
+        
+        function drawKeyboard() {
+            const keyboard = document.getElementById('keyboard');
+            const rows = ['abcdef', 'ghijkl', 'mnopqr', 'stuvwx', 'yzæøå'];
+
+            // Tegn bokstaver
+            rows.forEach((row, rowIndex) => {
+                row.split('').forEach(key => {
+                    const keyElement = document.createElement('div');
+                    keyElement.textContent = key;
+                    keyElement.className = 'key';
+                    keyElement.id = `key-${key}`;
+                    keyboard.appendChild(keyElement);
+                });
+
+                if (rowIndex === rows.length - 1) {
+                    const backspaceKey = document.createElement('div');
+                    backspaceKey.textContent = '⌫';
+                    backspaceKey.className = 'key';
+                    backspaceKey.id = 'key-backspace';
+                    keyboard.appendChild(backspaceKey);
+                }
+            });
+
+            const spacer = document.createElement('div');
+            spacer.style.gridColumn = 'span 6';
+            spacer.style.height = '10px';
+            keyboard.appendChild(spacer);
+        };
+
 
         function updateKeyboard(guess) {
             for (let i = 0; i < guess.length; i++) {
@@ -184,6 +221,8 @@
 
         function startup() {
             drawGrid();
+            document.body.tabIndex = -1;
+            document.body.focus();
             drawKeyboard();
             registerKeyboardEvents();
             console.log(`Secret word: ${state.secret}`);
