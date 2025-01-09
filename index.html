@@ -7,8 +7,6 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-
     <main>
         <div class="side"> 
             <div class="farge1">
@@ -24,22 +22,70 @@
                 <p>Feil bokstav</p>
             </div>
         </div>
-    
+        
+        <!-- Spillområdet -->
         <div class="container">
             <h1>SOMMER WORDLE</h1>
             <div id="game"></div>
         </div>
-    </main> 
 
+        <!-- Tastatur til høyre -->
+        <div class="keyboard-container">
+            <div id="keyboard"></div>
+        </div>
+    </main>
 
     <script>
-        const dictionary = ['solen', 'drue', 'dusje', 'drikk', 'havet', 'padle', 'bader', 'grønn', 'ferie', 'varme', 'bølge', 'syden', 'kjole', 'grill', 'farge', 'dykke', 'hytte', 'glass', 'reise', 'lykke', 'chill', 'båter', 'palme', 'flipp', 'flapp', 'skjær', 'fjell', 'danse', 'lilla', 'minne', 'kjøre', 'fiske', 'bilde', 'sushi', 'pizza', 'pasta', 'reker', 'ringe', 'penge', 'betal', 'jobbe', 'pynte', 'hvile', 'pause', 'sover', 'kadda', 'vanne', 'anker', 'stein', 'skjell', 'kreps', 'godis', 'kreta', 'drink', 'måned', 'paris', 'porto', 'split', 'naxos', 'koser', 'malta', 'dubai', 'qatar', 'kenya', 'milan', 'lagos', 'siena',  ];
+        const dictionary = ['solen', 'spise', 'smile', 'isbit', 'synge', 'seile', 'sykle', 'spill', 'drue', 'dusje', 'drikk', 'havet', 'padle', 'bader', 'grønn', 'ferie', 'varme', 'bølge', 'syden', 'kjole', 'grill', 'farge', 'dykke', 'hytte', 'glass', 'reise', 'lykke', 'chill', 'båter', 'palme', 'flipp', 'flapp', 'skjær', 'fjell', 'danse', 'lilla', 'minne', 'kjøre', 'fiske', 'bilde', 'sushi', 'pizza', 'pasta', 'reker', 'ringe', 'penge', 'betal', 'jobbe', 'pynte', 'hvile', 'pause', 'sover', 'kadda', 'vanne', 'anker', 'stein', 'skjell', 'kreps', 'godis', 'kreta', 'drink', 'måned', 'paris', 'porto', 'split', 'naxos', 'koser', 'malta', 'dubai', 'qatar', 'stupe', 'kenya', 'milan', 'lagos', 'japan'];
         const state = {
             secret: dictionary[Math.floor(Math.random() * dictionary.length)],
             grid: Array(6).fill().map(() => Array(5).fill('')),
             currentRow: 0,
             currentCol: 0,
         };
+
+        function drawGrid() {
+            const container = document.getElementById('game');
+            const grid = document.createElement('div');
+            grid.className = 'grid';
+            for (let i = 0; i < 6; i++) {
+                for (let j = 0; j < 5; j++) {
+                    const box = document.createElement('div');
+                    box.className = 'box';
+                    box.id = `box${i}${j}`;
+                    grid.appendChild(box);
+                }
+            }
+            container.appendChild(grid);
+        }
+
+        function drawKeyboard() {
+            const keyboard = document.getElementById('keyboard');
+            const rows = ['abcdef', 'ghijkl', 'mnopqr', 'stuvwx', 'yzæøå'];
+
+            // Tegn bokstaver
+            rows.forEach(row => {
+                row.split('').forEach(key => {
+                    const keyElement = document.createElement('div');
+                    keyElement.textContent = key;
+                    keyElement.className = 'key';
+                    keyElement.id = `key-${key}`;
+                    keyboard.appendChild(keyElement);
+                });
+
+                const spacer = document.createElement('div');
+                spacer.style.gridColumn = 'span 6';
+                spacer.style.height = '10px';
+                keyboard.appendChild(spacer);
+            });
+
+            // Legg til en 'Backspace' knapp
+            const backspaceKey = document.createElement('div');
+            backspaceKey.textContent = '⌫';
+            backspaceKey.className = 'key';
+            backspaceKey.id = 'key-backspace';
+            keyboard.appendChild(backspaceKey);
+        }
 
         function updateGrid() {
             for (let i = 0; i < state.grid.length; i++) {
@@ -50,31 +96,67 @@
             }
         }
 
-        function drawBox(container, row, col) {
-            const box = document.createElement('div');
-            box.className = 'box';
-            box.id = `box${row}${col}`;
-            container.appendChild(box);
+        function updateKeyboard(guess) {
+            for (let i = 0; i < guess.length; i++) {
+                const letter = guess[i];
+                const keyElement = document.getElementById(`key-${letter}`);
+                if (!keyElement) continue;
+
+                if (state.secret[i] === letter) {
+                    keyElement.classList.remove('nesten', 'tom');
+                    keyElement.classList.add('riktig');
+                } else if (state.secret.includes(letter)) {
+                    if (!keyElement.classList.contains('riktig')) {
+                        keyElement.classList.remove('tom');
+                        keyElement.classList.add('nesten');
+                    }
+                } else {
+                    keyElement.classList.add('tom');
+                }
+            }
         }
 
-        function drawGrid() {
-            const container = document.getElementById('game');
-            const grid = document.createElement('div');
-            grid.className = 'grid';
+        function revealWord(guess) {
+            const row = state.currentRow;
 
-            for (let i = 0; i < 6; i++) {
-                for (let j = 0; j < 5; j++) {
-                    drawBox(grid, i, j);
+            if (guess === state.secret) {
+                for (let i = 0; i < 5; i++) {
+                    const box = document.getElementById(`box${row}${i}`);
+                    box.classList.add('riktig');
+                }
+
+                setTimeout(() => {
+                    alert('Gratulerer! Du gjettet det riktige ordet!');
+                }, 200);
+                return;
+            }
+
+            for (let i = 0; i < 5; i++) {
+                const box = document.getElementById(`box${row}${i}`);
+                const letter = guess[i];
+
+                if (state.secret[i] === letter) {
+                    box.classList.add('riktig');
+                } else if (state.secret.includes(letter)) {
+                    box.classList.add('nesten');
+                } else {
+                    box.classList.add('tom');
                 }
             }
 
-            container.appendChild(grid);
+            updateKeyboard(guess);
+
+            if (state.currentRow === 5) {
+                setTimeout(() => {
+                    alert(`Game over! Ordet var "${state.secret}".`);
+                }, 200);
+            }
         }
 
         function registerKeyboardEvents() {
             document.body.onkeydown = (e) => {
-                const key = e.key;
-                if (key === 'Enter') {
+                const key = e.key.toLowerCase();
+                if (key === 'enter') {
                     if (state.currentCol === 5) {
                         const guess = state.grid[state.currentRow].join('');
                         if (dictionary.includes(guess)) {
@@ -82,80 +164,27 @@
                             state.currentRow++;
                             state.currentCol = 0;
                         } else {
-                            alert('Not a valid word');
+                            alert('Ikke et gyldig ord');
                         }
                     }
-                } else if (key === 'Backspace') {
-                    removeLetter();
-                } else if (isLetter(key)) {
-                    addLetter(key);
+                } else if (key === 'backspace') {
+                    if (state.currentCol > 0) {
+                        state.currentCol--;
+                        state.grid[state.currentRow][state.currentCol] = '';
+                    }
+                } else if (key.length === 1 && key.match(/[a-å]/i)) {
+                    if (state.currentCol < 5) {
+                        state.grid[state.currentRow][state.currentCol] = key;
+                        state.currentCol++;
+                    }
                 }
                 updateGrid();
             };
         }
 
-        function isLetter(key) {
-            return key.length === 1 && key.match(/[a-z]/i);
-        }
-
-        function addLetter(letter) {
-            if (state.currentCol < 5) {
-                state.grid[state.currentRow][state.currentCol] = letter;
-                state.currentCol++;
-            }
-        }
-
-        function removeLetter() {
-            if (state.currentCol > 0) {
-                state.currentCol--;
-                state.grid[state.currentRow][state.currentCol] = '';
-            }
-        }
-
-        function revealWord(guess) {
-        const row = state.currentRow;
-
-        if (guess === state.secret) {
-            // Marker alle boksene som riktige
-            for (let i = 0; i < 5; i++) {
-                const box = document.getElementById(`box${row}${i}`);
-                box.classList.add('riktig');
-            }
-
-            // Vent litt for å la fargene oppdatere før meldingen vises
-            setTimeout(() => {
-                alert('Gratulerer! Du gjettet det riktige ordet!');
-            }, 200); // 200ms forsinkelse
-
-            return; // Avslutt funksjonen fordi spillet er vunnet
-        }
-
-        // Hvis ordet ikke er riktig, sjekk hver bokstav
-        for (let i = 0; i < 5; i++) {
-            const box = document.getElementById(`box${row}${i}`);
-            const letter = guess[i];
-
-            if (state.secret[i] === letter) {
-                box.classList.add('riktig');
-            } else if (state.secret.includes(letter)) {
-                box.classList.add('nesten');
-            } else {
-                box.classList.add('tom');
-            }
-        }
-
-        // Sjekk om det er game over
-        if (state.currentRow === 5) {
-            setTimeout(() => {
-                alert(`Game over! Ordet var "${state.secret}".`);
-            }, 200);
-        }
-    }
-
-
-
         function startup() {
             drawGrid();
+            drawKeyboard();
             registerKeyboardEvents();
             console.log(`Secret word: ${state.secret}`);
         }
