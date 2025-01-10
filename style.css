@@ -26,7 +26,7 @@ body {
     height: 100vh;
     background-color: var(--lysrosa);
     background:
-        linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+        linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
         url('palme.jpg');
     background-size: cover;
     background-position: center;
@@ -46,7 +46,6 @@ h1 {
     font-family: "Pacifico", serif;
     margin-top: -70px;
     margin-bottom: 50px;
-
 }
 
 .side {
@@ -60,7 +59,6 @@ h1 {
     text-align: center;
     margin-top: 40px;
 }
-
 
 .farge1 {
     display: flex;
@@ -97,9 +95,8 @@ h1 {
 
 p {
     margin: 30px;
-    font-size: 20px;
+    font-size: 1.2rem;
 }
-
 
 .container {
     flex-grow: 1;
@@ -152,7 +149,6 @@ p {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    gap: 10px;
     margin-left: 30px;
 }
 
@@ -181,10 +177,7 @@ p {
     transition: background-color 0.3s ease;
 }
 
-.key:last-child {
-    grid-column: span 2;
-    /* Fyller to kolonner på nederste rad */
-}
+
 
 .key.riktig {
     background-color: var(--lysgrønn);
@@ -201,4 +194,59 @@ p {
 .key:hover {
     background-color: var(--grå);
     color: var(--hvit);
+}
+
+@media (max-width: 1200px) {
+    body {
+        height: auto;
+    }
+
+    main {
+        flex-direction: column;
+        align-items: center;
+        margin: 60px;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+        margin-top: 40px;
+    }
+
+    .side {
+        display: none;
+    }
+
+    .container {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .keyboard-container {
+        width: 50%;
+        margin-left: 0;
+    }
+
+    #keyboard{
+        gap: 5px;
+    }
+
+    .grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+
+    .box {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+    }
+
+    .key {
+        width: 40px;
+        height: 40px;
+        font-size: 0.8rem;
+    }
+
+    p {
+        font-size: 1rem;
+    }
 }

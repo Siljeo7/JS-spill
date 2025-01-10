@@ -25,34 +25,36 @@
             </div>
         </div>
 
-        <!-- Spillområdet -->
         <div class="container">
             <h1>SOMMER WORDLE</h1>
             <div id="game"></div>
         </div>
 
-        <!-- Tastatur til høyre -->
         <div class="keyboard-container">
             <div id="keyboard"></div>
         </div>
     </main>
 
     <script>
+        /* Oppretter en ordbok med mulige ord for Wordle-spillet */
         const dictionary = ['solen', 'spise', 'smile', 'isbit', 'synge', 'seile', 'sykle', 'spill', 'drue', 'dusje', 'drikk', 'havet', 'padle', 'bader', 'grønn', 'ferie', 'varme', 'bølge', 'syden', 'kjole', 'grill', 'farge', 'dykke', 'hytte', 'glass', 'reise', 'lykke', 'chill', 'båter', 'palme', 'flipp', 'flapp', 'skjær', 'fjell', 'danse', 'lilla', 'minne', 'kjøre', 'fiske', 'bilde', 'sushi', 'pizza', 'pasta', 'reker', 'ringe', 'penge', 'betal', 'jobbe', 'pynte', 'hvile', 'pause', 'sover', 'kadda', 'vanne', 'anker', 'stein', 'skjell', 'kreps', 'godis', 'kreta', 'drink', 'måned', 'paris', 'porto', 'split', 'naxos', 'koser', 'malta', 'dubai', 'qatar', 'stupe', 'kenya', 'milan', 'lagos', 'japan'];
+
+        /* Initialiserer tilstanden til spillet */
         const state = {
-            secret: dictionary[Math.floor(Math.random() * dictionary.length)],
-            grid: Array(6).fill().map(() => Array(5).fill('')),
-            currentRow: 0,
-            currentCol: 0,
+            secret: dictionary[Math.floor(Math.random() * dictionary.length)], /* Velger et tilfeldig ord som skal gjettes */
+            grid: Array(6).fill().map(() => Array(5).fill('')), /* Lager et rutenett for spillet, 6 rader og 5 kolonner */
+            currentRow: 0, /* Nåværende rad som brukeren er på */
+            currentCol: 0, /* Nåværende kolonne som brukeren skriver i */
         };
 
+        /* Funksjon for å tegne rutenettet på skjermen */
         function drawGrid() {
             const container = document.getElementById('game');
             container.innerHTML = '';
             const grid = document.createElement('div');
             grid.className = 'grid';
-            for (let i = 0; i < 6; i++) {
-                for (let j = 0; j < 5; j++) {
+            for (let i = 0; i < 6; i++) { /* Tegner 6 rader */
+                for (let j = 0; j < 5; j++) { /* Tegner 5 kolonner */
                     const box = document.createElement('div');
                     box.className = 'box';
                     box.id = `box${i}${j}`;
@@ -60,81 +62,20 @@
                 }
             }
             container.appendChild(grid);
-            updateGrid();
+            updateGrid(); /* Oppdaterer rutenettet med innhold */
         }
 
+        /* Funksjon for å oppdatere rutenettet etter hvert gjetning */
         function updateGrid() {
             for (let i = 0; i < state.grid.length; i++) {
                 for (let j = 0; j < state.grid[i].length; j++) {
                     const box = document.getElementById(`box${i}${j}`);
-                    box.textContent = state.grid[i][j];
+                    box.textContent = state.grid[i][j]; /* Setter inn innholdet i hver boks */
                 }
             }
         }
 
-        document.body.onkeydown = (e) => {
-            console.log(`Tast trykket: ${e.key}`);
-            const key = e.key.toLowerCase();
-
-            if (key === 'enter') {
-                // Send inn raden hvis den er full
-                if (state.currentCol === 5) {
-                    const guess = state.grid[state.currentRow].join('');
-                    if (dictionary.includes(guess)) {
-                        revealWord(guess);
-                        state.currentRow++;
-                        state.currentCol = 0;
-                    } else {
-                        alert('Ikke et gyldig ord');
-                    }
-                }
-            } else if (key === 'backspace') {
-                // Slett siste bokstav
-                if (state.currentCol > 0) {
-                    state.currentCol--;
-                    state.grid[state.currentRow][state.currentCol] = '';
-                    updateGrid();
-                }
-            } else if (key.length === 1 && key.match(/[a-å]/i)) {
-                // Legg til bokstav hvis det er plass
-                if (state.currentCol < 5) {
-                    state.grid[state.currentRow][state.currentCol] = key;
-                    state.currentCol++;
-                    updateGrid();
-                }
-            }
-        };
-
-        function drawKeyboard() {
-            const keyboard = document.getElementById('keyboard');
-            const rows = ['abcdef', 'ghijkl', 'mnopqr', 'stuvwx', 'yzæøå'];
-
-            // Tegn bokstaver
-            rows.forEach((row, rowIndex) => {
-                row.split('').forEach(key => {
-                    const keyElement = document.createElement('div');
-                    keyElement.textContent = key;
-                    keyElement.className = 'key';
-                    keyElement.id = `key-${key}`;
-                    keyboard.appendChild(keyElement);
-                });
-
-                if (rowIndex === rows.length - 1) {
-                    const backspaceKey = document.createElement('div');
-                    backspaceKey.textContent = '⌫';
-                    backspaceKey.className = 'key';
-                    backspaceKey.id = 'key-backspace';
-                    keyboard.appendChild(backspaceKey);
-                }
-            });
-
-            const spacer = document.createElement('div');
-            spacer.style.gridColumn = 'span 6';
-            spacer.style.height = '10px';
-            keyboard.appendChild(spacer);
-        };
-
-
+        /* Funksjon for å oppdatere tastaturet med riktig farge etter et gjettet ord */
         function updateKeyboard(guess) {
             for (let i = 0; i < guess.length; i++) {
                 const letter = guess[i];
@@ -143,22 +84,23 @@
 
                 if (state.secret[i] === letter) {
                     keyElement.classList.remove('nesten', 'tom');
-                    keyElement.classList.add('riktig');
+                    keyElement.classList.add('riktig'); /* Riktig bokstav på riktig plass */
                 } else if (state.secret.includes(letter)) {
                     if (!keyElement.classList.contains('riktig')) {
                         keyElement.classList.remove('tom');
-                        keyElement.classList.add('nesten');
+                        keyElement.classList.add('nesten'); /* Riktig bokstav på feil plass */
                     }
                 } else {
-                    keyElement.classList.add('tom');
+                    keyElement.classList.add('tom'); /* Feil bokstav */
                 }
             }
         }
 
+        /* Funksjon for å avsløre og vurdere ordet som er gjettet */
         function revealWord(guess) {
             const row = state.currentRow;
 
-            if (guess === state.secret) {
+            if (guess === state.secret) { /* Hvis ordet er riktig */
                 for (let i = 0; i < 5; i++) {
                     const box = document.getElementById(`box${row}${i}`);
                     box.classList.add('riktig');
@@ -192,45 +134,85 @@
             }
         }
 
-        function registerKeyboardEvents() {
-            document.body.onkeydown = (e) => {
-                const key = e.key.toLowerCase();
-                if (key === 'enter') {
-                    if (state.currentCol === 5) {
-                        const guess = state.grid[state.currentRow].join('');
-                        if (dictionary.includes(guess)) {
-                            revealWord(guess);
-                            state.currentRow++;
-                            state.currentCol = 0;
-                        } else {
-                            alert('Ikke et gyldig ord');
-                        }
-                    }
-                } else if (key === 'backspace') {
-                    if (state.currentCol > 0) {
-                        state.currentCol--;
-                        state.grid[state.currentRow][state.currentCol] = '';
-                    }
-                } else if (key.length === 1 && key.match(/[a-å]/i)) {
-                    if (state.currentCol < 5) {
-                        state.grid[state.currentRow][state.currentCol] = key;
-                        state.currentCol++;
-                    }
+        /* Håndterer tastetrykk (backspace, enter, bokstaver) */
+        function handleKeyPress(key) {
+            if (key === 'enter' && state.currentCol === 5) {
+                const guess = state.grid[state.currentRow].join('');
+                if (dictionary.includes(guess)) {
+                    revealWord(guess); /* Hvis ordet er gyldig, avslør ordet */
+                    state.currentRow++;
+                    state.currentCol = 0;
+                } else {
+                    alert('Ikke et gyldig ord');
                 }
-                updateGrid();
-            };
+            } else if (key === 'backspace' && state.currentCol > 0) {
+                state.currentCol--;
+                state.grid[state.currentRow][state.currentCol] = '';
+                updateGrid(); /* Fjerner en bokstav hvis backspace er trykket */
+            } else if (key.length === 1 && key.match(/[a-å]/i) && state.currentCol < 5) {
+                state.grid[state.currentRow][state.currentCol] = key;
+                state.currentCol++;
+                updateGrid(); /* Legger til en bokstav hvis en tast er trykket */
+            }
         }
+
+        /* Tegner tastaturet på skjermen */
+        function drawKeyboard() {
+            const keyboard = document.getElementById('keyboard');
+            const rows = ['abcdef', 'ghijkl', 'mnopqr', 'stuvwx', 'yzæøå'];
+
+            rows.forEach((row) => {
+                row.split('').forEach(key => {
+                    const keyElement = document.createElement('div');
+                    keyElement.textContent = key;
+                    keyElement.className = 'key';
+                    keyElement.id = `key-${key}`;
+                    keyElement.onclick = () => handleKeyPress(key);
+                    keyboard.appendChild(keyElement);
+                });
+            });
+
+            /* Legger tilbakeknappen på siste rad, på slutten */
+            const backspaceKey = document.createElement('div');
+            backspaceKey.textContent = '⌫';
+            backspaceKey.className = 'key';
+            backspaceKey.id = 'key-backspace';
+            backspaceKey.onclick = () => handleKeyPress('backspace');
+            keyboard.appendChild(backspaceKey);
+        };
+
+        /* Initialiserer spillet når nettsiden lastes */
+        document.body.onkeydown = (e) => {
+            const key = e.key.toLowerCase();
+
+            if (key === 'enter' && state.currentCol === 5) {
+                const guess = state.grid[state.currentRow].join('');
+                if (dictionary.includes(guess)) {
+                    revealWord(guess);
+                    state.currentRow++;
+                    state.currentCol = 0;
+                } else {
+                    alert('Ikke et gyldig ord');
+                }
+            } else if (key === 'backspace' && state.currentCol > 0) {
+                state.currentCol--;
+                state.grid[state.currentRow][state.currentCol] = '';
+                updateGrid();
+            } else if (key.length === 1 && key.match(/[a-å]/i) && state.currentCol < 5) {
+                state.grid[state.currentRow][state.currentCol] = key;
+                state.currentCol++;
+                updateGrid();
+            }
+        };
 
         function startup() {
             drawGrid();
             document.body.tabIndex = -1;
             document.body.focus();
             drawKeyboard();
-            registerKeyboardEvents();
-            console.log(`Secret word: ${state.secret}`);
         }
 
-        startup();
+        startup(); 
     </script>
 </body>
 
