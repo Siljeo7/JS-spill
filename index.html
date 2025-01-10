@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wordle</title>
+    <title>Wordle med Poengtelling</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -27,6 +27,9 @@
 
         <div class="container">
             <h1>SOMMER WORDLE</h1>
+            <div class="score-container">
+                <p>Poeng: <span id="score-display">0</span></p>
+            </div>
             <div id="game"></div>
         </div>
 
@@ -36,25 +39,23 @@
     </main>
 
     <script>
-        /* Oppretter en ordbok med mulige ord for Wordle-spillet */
-        const dictionary = ['solen', 'spise', 'smile', 'isbit', 'synge', 'seile', 'sykle', 'spill', 'drue', 'dusje', 'drikk', 'havet', 'padle', 'bader', 'grønn', 'ferie', 'varme', 'bølge', 'syden', 'kjole', 'grill', 'farge', 'dykke', 'hytte', 'glass', 'reise', 'lykke', 'chill', 'båter', 'palme', 'flipp', 'flapp', 'skjær', 'fjell', 'danse', 'lilla', 'minne', 'kjøre', 'fiske', 'bilde', 'sushi', 'pizza', 'pasta', 'reker', 'ringe', 'penge', 'betal', 'jobbe', 'pynte', 'hvile', 'pause', 'sover', 'kadda', 'vanne', 'anker', 'stein', 'skjell', 'kreps', 'godis', 'kreta', 'drink', 'måned', 'paris', 'porto', 'split', 'naxos', 'koser', 'malta', 'dubai', 'qatar', 'stupe', 'kenya', 'milan', 'lagos', 'japan'];
+        const dictionary = ['solen', 'spise', 'smile', 'synge', 'seile', 'sykle', 'spill', 'drikk', 'havet', 'padle', 'bader', 'grønn', 'ferie', 'varme', 'bølge', 'syden', 'kjole', 'grill', 'farge', 'dykke', 'hytte', 'hytta', 'glass', 'reise', 'lykke', 'båter', 'palme', 'skjær', 'fjell', 'danse', 'minne', 'kjøre', 'fiske', 'bilde', 'reker', 'betal', 'jobbe', 'hvile', 'pause', 'sover', 'kadda', 'vanne', 'anker', 'stein', 'skjell', 'kreps', 'godis', 'kreta', 'drink', 'måned', 'split', 'naxos', 'koser', 'malta', 'dubai', 'stupe', 'milan'];
 
-        /* Initialiserer tilstanden til spillet */
         const state = {
-            secret: dictionary[Math.floor(Math.random() * dictionary.length)], /* Velger et tilfeldig ord som skal gjettes */
-            grid: Array(6).fill().map(() => Array(5).fill('')), /* Lager et rutenett for spillet, 6 rader og 5 kolonner */
-            currentRow: 0, /* Nåværende rad som brukeren er på */
-            currentCol: 0, /* Nåværende kolonne som brukeren skriver i */
+            secret: dictionary[Math.floor(Math.random() * dictionary.length)],
+            grid: Array(6).fill().map(() => Array(5).fill('')),
+            currentRow: 0,
+            currentCol: 0,
+            score: 0,
         };
 
-        /* Funksjon for å tegne rutenettet på skjermen */
         function drawGrid() {
             const container = document.getElementById('game');
             container.innerHTML = '';
             const grid = document.createElement('div');
             grid.className = 'grid';
-            for (let i = 0; i < 6; i++) { /* Tegner 6 rader */
-                for (let j = 0; j < 5; j++) { /* Tegner 5 kolonner */
+            for (let i = 0; i < 6; i++) {
+                for (let j = 0; j < 5; j++) {
                     const box = document.createElement('div');
                     box.className = 'box';
                     box.id = `box${i}${j}`;
@@ -62,20 +63,18 @@
                 }
             }
             container.appendChild(grid);
-            updateGrid(); /* Oppdaterer rutenettet med innhold */
+            updateGrid();
         }
 
-        /* Funksjon for å oppdatere rutenettet etter hvert gjetning */
         function updateGrid() {
             for (let i = 0; i < state.grid.length; i++) {
                 for (let j = 0; j < state.grid[i].length; j++) {
                     const box = document.getElementById(`box${i}${j}`);
-                    box.textContent = state.grid[i][j]; /* Setter inn innholdet i hver boks */
+                    box.textContent = state.grid[i][j];
                 }
             }
         }
 
-        /* Funksjon for å oppdatere tastaturet med riktig farge etter et gjettet ord */
         function updateKeyboard(guess) {
             for (let i = 0; i < guess.length; i++) {
                 const letter = guess[i];
@@ -83,108 +82,78 @@
                 if (!keyElement) continue;
 
                 if (state.secret[i] === letter) {
-                    keyElement.classList.remove('nesten', 'tom');
-                    keyElement.classList.add('riktig'); /* Riktig bokstav på riktig plass */
+                    keyElement.classList.add('riktig');
                 } else if (state.secret.includes(letter)) {
-                    if (!keyElement.classList.contains('riktig')) {
-                        keyElement.classList.remove('tom');
-                        keyElement.classList.add('nesten'); /* Riktig bokstav på feil plass */
-                    }
+                    keyElement.classList.add('nesten');
                 } else {
-                    keyElement.classList.add('tom'); /* Feil bokstav */
+                    keyElement.classList.add('tom');
                 }
             }
         }
 
-        /* Funksjon for å avsløre og vurdere ordet som er gjettet */
+        function updateScore() {
+            const scoreDisplay = document.getElementById('score-display');
+            scoreDisplay.textContent = state.score;
+        }
+
         function revealWord(guess) {
-            const row = state.currentRow;
+    const row = state.currentRow;
+    const letterCounts = {}; // Holder styr på antallet av hver bokstav i det hemmelige ordet
 
-            if (guess === state.secret) { /* Hvis ordet er riktig */
-                for (let i = 0; i < 5; i++) {
-                    const box = document.getElementById(`box${row}${i}`);
-                    box.classList.add('riktig');
-                }
+    // Telle opp bokstavene i det hemmelige ordet
+    for (let i = 0; i < state.secret.length; i++) {
+        letterCounts[state.secret[i]] = (letterCounts[state.secret[i]] || 0) + 1;
+    }
 
-                setTimeout(() => {
-                    alert('Gratulerer! Du gjettet det riktige ordet!');
-                }, 200);
-                return;
-            }
+    // Først, markér de riktige bokstavene (grønn/blå)
+    for (let i = 0; i < 5; i++) {
+        const box = document.getElementById(`box${row}${i}`);
+        const letter = guess[i];
 
-            for (let i = 0; i < 5; i++) {
-                const box = document.getElementById(`box${row}${i}`);
-                const letter = guess[i];
-
-                if (state.secret[i] === letter) {
-                    box.classList.add('riktig');
-                } else if (state.secret.includes(letter)) {
-                    box.classList.add('nesten');
-                } else {
-                    box.classList.add('tom');
-                }
-            }
-
-            updateKeyboard(guess);
-
-            if (state.currentRow === 5) {
-                setTimeout(() => {
-                    alert(`Game over! Ordet var "${state.secret}".`);
-                }, 200);
-            }
+        if (state.secret[i] === letter) {
+            box.classList.add('riktig');
+            state.score += 2;
+            letterCounts[letter]--; // Reduser antallet for denne bokstaven
         }
+    }
 
-        /* Håndterer tastetrykk (backspace, enter, bokstaver) */
+    // Deretter, markér de nesten riktige bokstavene (blå) eller feil bokstaver (rosa)
+    for (let i = 0; i < 5; i++) {
+        const box = document.getElementById(`box${row}${i}`);
+        const letter = guess[i];
+
+        if (state.secret[i] !== letter && state.secret.includes(letter) && letterCounts[letter] > 0) {
+            box.classList.add('nesten');
+            state.score += 1;
+            letterCounts[letter]--; // Reduser antallet for denne bokstaven
+        } else if (state.secret[i] !== letter) {
+            box.classList.add('tom');
+        }
+    }
+
+    updateKeyboard(guess);
+    updateScore();
+
+    // Hvis ordet er riktig, gi ekstra poeng basert på raden
+    if (guess === state.secret) {
+        const bonusPoints = [30, 20, 10, 5, 3, 0][row];
+        state.score += 10 + bonusPoints; // 10 poeng for å løse ordet + bonuspoeng
+        updateScore();
+
+        setTimeout(() => {
+            alert(`Gratulerer! Du gjettet det riktige ordet! Poeng: ${state.score}`);
+        }, 200);
+        return;
+    }
+
+    if (state.currentRow === 5) {
+        setTimeout(() => {
+            alert(`Game over! Ordet var "${state.secret}". Poeng: ${state.score}`);
+        }, 200);
+    }
+}
+
         function handleKeyPress(key) {
-            if (key === 'enter' && state.currentCol === 5) {
-                const guess = state.grid[state.currentRow].join('');
-                if (dictionary.includes(guess)) {
-                    revealWord(guess); /* Hvis ordet er gyldig, avslør ordet */
-                    state.currentRow++;
-                    state.currentCol = 0;
-                } else {
-                    alert('Ikke et gyldig ord');
-                }
-            } else if (key === 'backspace' && state.currentCol > 0) {
-                state.currentCol--;
-                state.grid[state.currentRow][state.currentCol] = '';
-                updateGrid(); /* Fjerner en bokstav hvis backspace er trykket */
-            } else if (key.length === 1 && key.match(/[a-å]/i) && state.currentCol < 5) {
-                state.grid[state.currentRow][state.currentCol] = key;
-                state.currentCol++;
-                updateGrid(); /* Legger til en bokstav hvis en tast er trykket */
-            }
-        }
-
-        /* Tegner tastaturet på skjermen */
-        function drawKeyboard() {
-            const keyboard = document.getElementById('keyboard');
-            const rows = ['abcdef', 'ghijkl', 'mnopqr', 'stuvwx', 'yzæøå'];
-
-            rows.forEach((row) => {
-                row.split('').forEach(key => {
-                    const keyElement = document.createElement('div');
-                    keyElement.textContent = key;
-                    keyElement.className = 'key';
-                    keyElement.id = `key-${key}`;
-                    keyElement.onclick = () => handleKeyPress(key);
-                    keyboard.appendChild(keyElement);
-                });
-            });
-
-            /* Legger tilbakeknappen på siste rad, på slutten */
-            const backspaceKey = document.createElement('div');
-            backspaceKey.textContent = '⌫';
-            backspaceKey.className = 'key';
-            backspaceKey.id = 'key-backspace';
-            backspaceKey.onclick = () => handleKeyPress('backspace');
-            keyboard.appendChild(backspaceKey);
-        };
-
-        /* Initialiserer spillet når nettsiden lastes */
-        document.body.onkeydown = (e) => {
-            const key = e.key.toLowerCase();
-
             if (key === 'enter' && state.currentCol === 5) {
                 const guess = state.grid[state.currentRow].join('');
                 if (dictionary.includes(guess)) {
@@ -203,16 +172,41 @@
                 state.currentCol++;
                 updateGrid();
             }
-        };
+        }
+
+        function drawKeyboard() {
+            const keyboard = document.getElementById('keyboard');
+            const rows = ['abcdef', 'ghijkl', 'mnopqr', 'stuvwx', 'yzæøå'];
+
+            rows.forEach((row) => {
+                row.split('').forEach(key => {
+                    const keyElement = document.createElement('div');
+                    keyElement.textContent = key;
+                    keyElement.className = 'key';
+                    keyElement.id = `key-${key}`;
+                    keyElement.onclick = () => handleKeyPress(key);
+                    keyboard.appendChild(keyElement);
+                });
+            });
+
+            const backspaceKey = document.createElement('div');
+            backspaceKey.textContent = '⌫';
+            backspaceKey.className = 'key';
+            backspaceKey.id = 'key-backspace';
+            backspaceKey.onclick = () => handleKeyPress('backspace');
+            keyboard.appendChild(backspaceKey);
+        }
 
         function startup() {
             drawGrid();
             document.body.tabIndex = -1;
             document.body.focus();
             drawKeyboard();
+            updateScore();
         }
 
-        startup(); 
+        document.body.onkeydown = (e) => handleKeyPress(e.key.toLowerCase());
+        startup();
     </script>
 </body>
 
