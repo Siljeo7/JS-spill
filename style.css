@@ -8,7 +8,6 @@
 }
 
 :root {
-    --grønn: #538d4e;
     --blå: #aac6daff;
     --rosa: #c96480ff;
     --babyrosa: #dda6b3ff;
@@ -16,6 +15,7 @@
     --grå: #6a6a6a;
     --hvit: #fff;
     --lysrosa: #cd778dff;
+    --hvitrosa: #f4cddcff;
 }
 
 body {
@@ -200,6 +200,25 @@ p {
     text-align: center;
 }
 
+.retry-button {
+    position: absolute;
+    top: 60px;
+    left: 60px;
+    background-color: var(--hvitrosa);
+    color: var(--rosa);
+    border: 2px solid var(--hvit);
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.retry-button:hover {
+    background-color: var(--lysrosa);
+    color: var(--hvit);
+}
 
 @media (max-width: 1100px) {
     body {
