@@ -220,6 +220,26 @@ p {
     color: var(--hvit);
 }
 
+.highscore-container {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 18px;
+    color: #333;
+}
+
+.highscore-container h2 {
+    font-size: 22px;
+    margin-bottom: 5px;
+    color: #444;
+}
+
+.highscore-container p {
+    font-size: 24px;
+    font-weight: bold;
+    color: #008000; /* Grønn for highscore */
+}
+
+
 @media (max-width: 1100px) {
     body {
         height: auto;

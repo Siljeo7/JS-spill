@@ -4,13 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wordle med Poengtelling</title>
-    <link rel="stylesheet" href="style.css"> <!-- Lenke til CSS-fil for stilsetting -->
+    <title>Wordle </title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <main>
-        <!-- Sidepanel med fargeforklaring -->
         <div class="side">
             <div class="farge1">
                 <div id="grønn"></div>
@@ -26,243 +25,176 @@
             </div>
         </div>
 
-        <!-- Spillskjerm med poeng og spillgrid -->
         <div class="container">
             <h1>SOMMER WORDLE</h1>
             <div class="score-container">
                 <p>Poeng: <span id="score-display">0</span></p>
             </div>
-            <div id="game"></div> <!-- Spillgrid vises her -->
+            <div id="game"></div>
         </div>
 
-        <!-- Tastatur for bokstaver -->
         <div class="keyboard-container">
-            <div id="keyboard"></div> <!-- Tastatur vises her -->
+            <div id="keyboard"></div>
         </div>
 
-        <!-- Om igjen knapp -->
         <button id="retry-button" class="retry-button">Om igjen</button>
     </main>
 
     <script>
-        // Ordlisten som brukes til å velge hemmelig ord
-        const dictionary = ['solen', 'spise', 'smile', 'synge', 'seile', 'sykle', 'spill', 'drikk', 'havet', 'padle', 'bader', 'grønn', 'ferie', 'varme', 'bølge', 'syden', 'kjole', 'grill', 'farge', 'dykke', 'hytte', 'hytta', 'glass', 'reise', 'lykke', 'båter', 'palme', 'skjær', 'fjell', 'danse', 'minne', 'kjøre', 'fiske', 'bilde', 'reker', 'mango', 'melon', 'kokos', 'frukt', 'jobbe', 'hvile', 'pause', 'sover', 'kadda', 'vanne', 'isbit', 'anker', 'stein', 'skjell', 'kreps', 'godis', 'drink', 'måned', 'split', 'koser', 'stupe'];
+        /* Ordliste*/
+        const dictionary = ['solen', 'badet', 'spise', 'smile', 'taner', 'synge', 'seile', 'sykle', 'spill', 'drikk', 'havet', 'padle', 'bader', 'grønn', 'ferie', 'varme', 'bølge', 'syden', 'kjole', 'grill', 'farge', 'dykke', 'hytte', 'hytta', 'glass', 'reise', 'lykke', 'båter', 'palme', 'skjær', 'fjell', 'danse', 'minne', 'kjøre', 'fiske', 'bilde', 'reker', 'mango', 'melon', 'kokos', 'frukt', 'jobbe', 'hvile', 'pause', 'sover', 'kadda', 'vanne', 'isbit', 'anker', 'stein', 'skjell', 'kreps', 'godis', 'drink', 'måned', 'split', 'koser', 'stupe'];
 
-        // Spillets tilstand, inkludert hemmelig ord, grid, poeng og mer
+        /* Spillets tilstand, inkludert ordliste, grid, poeng og mer*/
         const state = {
-            secret: dictionary[Math.floor(Math.random() * dictionary.length)], // Velg tilfeldig hemmelig ord
-            grid: Array(6).fill().map(() => Array(5).fill('')), // Opprett tomt grid (6 rader, 5 kolonner)
-            currentRow: 0, // Starter på første rad
-            currentCol: 0, // Starter på første kolonne
-            score: 0, // Startpoeng
+            secret: dictionary[Math.floor(Math.random() * dictionary.length)], /* Velg tilfeldig hemmelig ord */
+            grid: Array(6).fill().map(() => Array(5).fill('')), /* Grid til wordle rutene (6 rader, 5 kolonner)*/
+            currentRow: 0, /* Starter på første rad*/
+            currentCol: 0, /* Starter på første kolonne*/
+            score: 0, /* Startpoeng*/
         };
 
-        // Funksjon for å tegne gridet med de ulike boksene
+        /* Funksjon for å tegne griden med de ulike boksene*/
         function drawGrid() {
-            const container = document.getElementById('game');
-            container.innerHTML = ''; // Tømmer eventuelle tidligere grid
+            const container = document.getElementById('game'); /*Henter HTML-elementet med ID 'game' til container*/
+            container.innerHTML = ''; /* Tømmer alt innholdet i 'container'*/
 
             const grid = document.createElement('div');
             grid.className = 'grid';
 
-            // Loop gjennom radene og kolonnene og legg til boksene
-            for (let i = 0; i < 6; i++) {
-                for (let j = 0; j < 5; j++) {
-                    const box = document.createElement('div');
+            /*Lager grid og oppdaterer det med bokstaver etter hvert forsøk.*/
+            for (let i = 0; i < 6; i++) { /*'i' er indeksvariabelen for radene i løkken*/
+                for (let j = 0; j < 5; j++) { /*'j' er indeksvariabelen for kolonnene i løkken*/
+                    const box = document.createElement('div'); /*Nytt div element som representerer en boks i grid*/
                     box.className = 'box';
-                    box.id = `box${i}${j}`; // Unik ID for hver boks
-                    grid.appendChild(box);
+                    box.id = `box${i}${j}`; /* Unik ID for hver boks basert på rad- og kolonnenummer*/
+                    grid.appendChild(box); /*Legger boksen til i gridet.*/
                 }
             }
             container.appendChild(grid);
-            updateGrid(); // Oppdaterer gridet etter tegning
+            updateGrid(); /* Oppdaterer gridet etter tegning*/
         }
 
-        // Funksjon for å oppdatere visningen av bokstavene i gridet
+        /* Funksjon som oppdaterer bokstavene i gridet basert på 'state.grid'*/
         function updateGrid() {
-            for (let i = 0; i < state.grid.length; i++) {
-                for (let j = 0; j < state.grid[i].length; j++) {
+            for (let i = 0; i < state.grid.length; i++) { /*Går gjennom radene i 'state.grid'*/
+                for (let j = 0; j < state.grid[i].length; j++) { /*Går gjennom kolonnene i rad `i` i `state.grid`.*/
                     const box = document.getElementById(`box${i}${j}`);
-                    box.textContent = state.grid[i][j]; // Oppdater bokstav i hver boks
+                    box.textContent = state.grid[i][j]; /* Oppdater bokstav i hver boks. Setter bokstavinnholdet i boksen til verdien fra 'state.grid[i][j]'*/
+                }
+            }
+        }
+        /*Oppdaterer tastaturet med riktige (grønn), nesten riktige (blå), og feil (rosa) bokstaver.*/
+        function updateKeyboard(guess) {
+            const letterCounts = {}; /* Holder styr på antallet av hver bokstav i det hemmelige ordet*/
+
+            /* Teller opp bokstavene i det hemmelige ordet*/
+            for (let i = 0; i < state.secret.length; i++) {
+                letterCounts[state.secret[i]] = (letterCounts[state.secret[i]] || 0) + 1;
+            }
+
+            /* Først, merk de riktige bokstavene*/
+            for (let i = 0; i < guess.length; i++) {
+                const letter = guess[i];
+                const keyElement = document.getElementById(`key-${letter}`);
+                if (!keyElement) continue;
+
+                /*Merk grønn hvis bokstaven er riktig på plass*/
+                if (state.secret[i] === letter) {
+                    keyElement.classList.add('riktig'); /* Grønn*/
+                    keyElement.classList.remove('nesten', 'tom'); /* Fjern blå og rosa farge*/
+                    letterCounts[letter]--; /* Reduser antallet for denne bokstaven*/
+                }
+            }
+
+            /* Deretter, merk de blå bokstavene eller rosa*/
+            for (let i = 0; i < guess.length; i++) {
+                const letter = guess[i];
+                const keyElement = document.getElementById(`key-${letter}`);
+                if (!keyElement) continue;
+
+                /* Hvis bokstaven allerede er markert som grønn, hopp over den*/
+                if (keyElement.classList.contains('riktig')) continue;
+
+                /* Dersom bokstaven er i det hemmelige ordet men på feil plass, merk blå*/
+                if (state.secret.includes(letter) && letterCounts[letter] > 0) {
+                    keyElement.classList.add('nesten'); /* Blå*/
+                    keyElement.classList.remove('tom'); /* Fjern rosa farge*/
+                    letterCounts[letter]--; /* Reduser antallet for denne bokstaven*/
+                } else {
+                    keyElement.classList.add('tom'); /* Rosa */
                 }
             }
         }
 
-        function updateKeyboard(guess) {
-    const letterCounts = {}; // Holder styr på antallet av hver bokstav i det hemmelige ordet
-
-    // Telle opp bokstavene i det hemmelige ordet
-    for (let i = 0; i < state.secret.length; i++) {
-        letterCounts[state.secret[i]] = (letterCounts[state.secret[i]] || 0) + 1;
-    }
-
-    // Først, merk de riktige bokstavene (grønn)
-    for (let i = 0; i < guess.length; i++) {
-        const letter = guess[i];
-        const keyElement = document.getElementById(`key-${letter}`);
-        if (!keyElement) continue;
-
-        // Merk grønn hvis bokstaven er riktig på plass
-        if (state.secret[i] === letter) {
-            keyElement.classList.add('riktig'); // Grønn
-            keyElement.classList.remove('nesten', 'tom'); // Fjern blå og rosa farge
-            letterCounts[letter]--; // Reduser antallet for denne bokstaven
-        }
-    }
-
-    // Deretter, merk de nesten riktige bokstavene (blå) eller feil bokstaver (rosa)
-    for (let i = 0; i < guess.length; i++) {
-        const letter = guess[i];
-        const keyElement = document.getElementById(`key-${letter}`);
-        if (!keyElement) continue;
-
-        // Hvis bokstaven allerede er markert som grønn, hopp over den
-        if (keyElement.classList.contains('riktig')) continue;
-
-        // Hvis bokstaven er i det hemmelige ordet men på feil plass, merk blå
-        if (state.secret.includes(letter) && letterCounts[letter] > 0) {
-            keyElement.classList.add('nesten'); // Blå
-            keyElement.classList.remove('tom'); // Fjern rosa farge
-            letterCounts[letter]--; // Reduser antallet for denne bokstaven
-        } else {
-            keyElement.classList.add('tom'); // Rosa
-            keyElement.classList.remove('nesten'); // Fjern blå farge
-        }
-    }
-}
-
-
-
-
-
-
-        // Funksjon for å oppdatere poeng
+        /* Funksjon for å oppdatere poeng*/
         function updateScore() {
             const scoreDisplay = document.getElementById('score-display');
-            scoreDisplay.textContent = state.score; // Oppdaterer visningen av poengene
+            scoreDisplay.textContent = state.score; /* Oppdaterer visningen av poengene*/
         }
 
-        // Retry-knapp funksjonalitet
+        /* Retry-knappen*/
         document.getElementById('retry-button').onclick = () => {
-            state.secret = dictionary[Math.floor(Math.random() * dictionary.length)]; // Velg nytt hemmelig ord
-            console.log(`Nytt hemmelig ord: ${state.secret}`); // Skriv ut nytt ord i konsollen for debugging
+            state.secret = dictionary[Math.floor(Math.random() * dictionary.length)]; /* Velger et nytt hemmelig ord*/
+            console.log(`Riktig ord er: ${state.secret}`); /* Skriver ut et nytt ord i console*/
 
-            // Nullstill spillets tilstand
+            /*Nullstiller spillets tilstand*/
             state.grid = Array(6).fill().map(() => Array(5).fill(''));
             state.currentRow = 0;
             state.currentCol = 0;
             state.score = 0;
 
-            // Fjern eksisterende spillgrid og tastatur
+            /*Fjerner eksisterende spillgrid og tastatur*/
             const gameContainer = document.getElementById('game');
             gameContainer.innerHTML = '';
             const keyboardContainer = document.getElementById('keyboard');
             keyboardContainer.innerHTML = '';
 
-            // Tegn nytt spill og oppdater poeng
+            /* Tegner et nytt spill og oppdater poeng*/
             drawGrid();
             drawKeyboard();
             updateScore();
         };
 
-        // Funksjon for å avsløre resultatet etter et gjett
-        function revealWord(guess) {
-            const row = state.currentRow;
-            const letterCounts = {}; // Teller bokstaver i hemmelig ord
-
-            // Teller antall forekomster av hver bokstav i hemmelig ord
-            for (let i = 0; i < state.secret.length; i++) {
-                letterCounts[state.secret[i]] = (letterCounts[state.secret[i]] || 0) + 1;
-            }
-
-            // Først, markér de riktige bokstavene (grønn)
-            for (let i = 0; i < 5; i++) {
-                const box = document.getElementById(`box${row}${i}`);
-                const letter = guess[i];
-                if (state.secret[i] === letter) {
-                    box.classList.add('riktig');
-                    state.score += 2; // 2 poeng for riktig bokstav
-                    letterCounts[letter]--; // Reduser antallet for denne bokstaven
-                }
-            }
-
-            // Deretter, markér de nesten riktige bokstavene (blå) eller feil bokstaver (rosa)
-            for (let i = 0; i < 5; i++) {
-                const box = document.getElementById(`box${row}${i}`);
-                const letter = guess[i];
-
-                if (state.secret[i] !== letter && state.secret.includes(letter) && letterCounts[letter] > 0) {
-                    box.classList.add('nesten');
-                    state.score += 1; // 1 poeng for nesten riktig bokstav
-                    letterCounts[letter]--; // Reduser antallet for denne bokstaven
-                } else if (state.secret[i] !== letter) {
-                    box.classList.add('tom'); // Rosa for feil bokstav
-                }
-            }
-
-            updateKeyboard(guess); // Oppdater tastaturet
-            updateScore(); // Oppdater poeng
-
-            // Hvis ordet er riktig, vis gratulasjon og poeng
-            if (guess === state.secret) {
-                const bonusPoints = [30, 20, 10, 5, 3, 0][row]; // Bonuspoeng basert på raden
-                state.score += 10 + bonusPoints; // 10 poeng for riktig ord + bonuspoeng
-                updateScore();
-
-                setTimeout(() => {
-                    alert(`Gratulerer! Du gjettet det riktige ordet! Poeng: ${state.score}`);
-                }, 200);
-                return;
-            }
-
-            // Hvis 5 forsøk er brukt, vis "game over"
-            if (state.currentRow === 5) {
-                setTimeout(() => {
-                    alert(`Game over! Ordet var "${state.secret}". Poeng: ${state.score}`);
-                }, 200);
-            }
-        }
-
-        // Funksjon for å håndtere tastetrykk
-        function handleKeyPress(key) {
-            if (key === 'enter' && state.currentCol === 5) {
-                const guess = state.grid[state.currentRow].join('');
-                if (dictionary.includes(guess)) {
-                    revealWord(guess); // Vis resultatet av gjettet ord
-                    state.currentRow++;
-                    state.currentCol = 0;
+               /* Funksjon for å håndtere tastetrykk*/
+               function handleKeyPress(key) {
+            if (key === 'enter' && state.currentCol === 5) { /*Sjekker om "enter" er trykket og ordet er fullt (5 bokstaver).*/
+                const guess = state.grid[state.currentRow].join(''); /*Lager et gjetteord ved å sette sammen bokstavene i raden til et ord.*/
+                if (dictionary.includes(guess)) { /*Sjekker om det gjettede ordet finnes i ordboken*/
+                    revealWord(guess); /* Viser resultatet av gjettet ord*/
+                    state.currentRow++; /*Øker raden (currentRow) med 1 og går videre til neste rad*/
+                    state.currentCol = 0; /*Setter kolonnen tilbake til 0 for neste rad.*/
                 } else {
-                    alert('Ikke et gyldig ord'); // Hvis ordet ikke finnes i ordboken
+                    alert('Ikke et gyldig ord'); /* Alerter dersom ordet ikke finnes i ordboken*/
                 }
             } else if (key === 'backspace' && state.currentCol > 0) {
-                state.currentCol--;
-                state.grid[state.currentRow][state.currentCol] = ''; // Fjern siste bokstav
+                state.currentCol--; /*Reduserer kolonnen ved "backspace" hvis mulig*/
+                state.grid[state.currentRow][state.currentCol] = ''; /* Fjerner siste bokstav*/
                 updateGrid();
-            } else if (key.length === 1 && key.match(/[a-å]/i) && state.currentCol < 5) {
-                state.grid[state.currentRow][state.currentCol] = key; // Legg til bokstav i gridet
+            } else if (key.length === 1 && key.match(/[a-å]/i) && state.currentCol < 5) { /*Legger til bokstaven hvis den er gyldig og kolonnen er mindre enn 5*/
+                state.grid[state.currentRow][state.currentCol] = key; /* Legger til bokstav i gridet*/
                 state.currentCol++;
                 updateGrid();
             }
         }
 
-        // Funksjon for å tegne tastaturet
+        /* Funksjon for å tegne tastaturet*/
         function drawKeyboard() {
             const keyboard = document.getElementById('keyboard');
-            const rows = ['abcdef', 'ghijkl', 'mnopqr', 'stuvwx', 'yzæøå'];
+            const rows = ['abcdef', 'ghijkl', 'mnopqr', 'stuvwx', 'yzæøå']; /*radene med alle bokstaver i tastaturet*/
 
-            // Lag tastene på tastaturet
-            rows.forEach((row) => {
-                row.split('').forEach(key => {
-                    const keyElement = document.createElement('div');
-                    keyElement.textContent = key;
+            /* Lager tastene på tastaturet*/
+            rows.forEach((row) => { /*Går gjennom hver rad*/
+                row.split('').forEach(key => { /*Deler raden i bokstaver og går gjennom hver*/
+                    const keyElement = document.createElement('div'); /*Lager et nytt div element for hver bokstav.*/
+                    keyElement.textContent = key; /*Setter tekstinnholdet til key i det opprettede div elementet*/
                     keyElement.className = 'key';
-                    keyElement.id = `key-${key}`;
-                    keyElement.onclick = () => handleKeyPress(key); // Håndter klikk på tastene
-                    keyboard.appendChild(keyElement);
+                    keyElement.id = `key-${key}`; /*Setter en ID til div elementet til key og så bokstaven*/
+                    keyElement.onclick = () => handleKeyPress(key); /* Håndter klikk på tastene*/
+                    keyboard.appendChild(keyElement); /*Legger div elementet til i tastatur containeren*/
                 });
             });
 
-            // Legg til tilbake-tasten
+            /* Legger til tilbake-tasten*/
             const backspaceKey = document.createElement('div');
             backspaceKey.textContent = '⌫';
             backspaceKey.className = 'key';
@@ -271,20 +203,77 @@
             keyboard.appendChild(backspaceKey);
         }
 
-        // Funksjon for å initialisere spillet
-        function startup() {
-            drawGrid(); // Tegn gridet
-            document.body.tabIndex = -1; // Fjerner fokus fra body
-            document.body.focus(); // Fokuserer på body
-            drawKeyboard(); // Tegn tastaturet
-            updateScore(); // Vis poeng
-            console.log(`Riktig ord er: ${state.secret}`); // Debugging, skriv ut hemmelig ord
+        /* Funksjon for å avsløre resultatet etter et gjett*/
+        function revealWord(guess) {
+            const row = state.currentRow;
+            const letterCounts = {}; /*Teller bokstaver i hemmelig ord*/
+
+            /* Teller hvor mange ganger hver bokstav vises i det hemmelige ordet*/
+            for (let i = 0; i < state.secret.length; i++) {
+                letterCounts[state.secret[i]] = (letterCounts[state.secret[i]] || 0) + 1;
+            }
+
+            /* Først, markér de riktige bokstavene*/
+            for (let i = 0; i < 5; i++) {
+                const box = document.getElementById(`box${row}${i}`);
+                const letter = guess[i]; /*Henter bokstaven fra gjettet ord på posisjon 'i'*/
+                if (state.secret[i] === letter) {
+                    box.classList.add('riktig');
+                    state.score += 2; /* 2 poeng for riktig bokstav*/
+                    letterCounts[letter]--; /* Reduser antallet for denne bokstaven*/
+                }
+            }
+
+            /* Deretter, markerer de nesten riktige bokstavene eller feile bokstavene*/
+            for (let i = 0; i < 5; i++) {
+                const box = document.getElementById(`box${row}${i}`);
+                const letter = guess[i];
+
+                if (state.secret[i] !== letter && state.secret.includes(letter) && letterCounts[letter] > 0) { /*Sjekker om bokstaven er i det hemmelige ordet, men på feil plass, og at den ikke er brukt opp.*/
+                    box.classList.add('nesten');
+                    state.score += 1; /* 1 poeng for nesten riktig bokstav */
+                    letterCounts[letter]--; /* Reduser antallet for denne bokstaven*/
+                } else if (state.secret[i] !== letter) {
+                    box.classList.add('tom'); /* Rosa for feil bokstav*/
+                }
+            }
+
+            updateKeyboard(guess); /* Oppdater tastaturet*/
+            updateScore(); /* Oppdater poeng*/
+
+            /* Hvis ordet er riktig, vis grattis og poeng*/
+            if (guess === state.secret) {
+                const bonusPoints = [30, 20, 10, 5, 3, 0][row]; /* Bonuspoeng basert på radene*/
+                state.score += 10 + bonusPoints; /* 10 poeng for riktig ord + bonuspoeng*/
+                updateScore();
+
+                setTimeout(() => {
+                    alert(`Gratulerer! Du gjettet det riktige ordet! Poeng: ${state.score}`);
+                }, 200);
+                return;
+            }
+
+            /* Hvis 5 forsøk er brukt, vis game over*/
+            if (state.currentRow === 5) {
+                setTimeout(() => {
+                    alert(`Game over! Ordet var "${state.secret}". Poeng: ${state.score}`);
+                }, 200); /*Viser game over meldingen etter 200 ms med ordet og poengene.*/
+            }
         }
 
-        // Håndterer tastetrykk
+        function startup() {
+            drawGrid(); /* Tegn griden*/
+            document.body.tabIndex = -1; /* Fjerner fokuset fra body*/ /*Ikke direkte nødvendig å ha med, men det hindrer at body får fokus og forbedrer tastaturfokus håndteringen*/
+            document.body.focus(); /* Fokuserer på body*/ /*Sammen sørger de for at tastaturfokuset håndteres riktig fra starten av spillet*/
+            drawKeyboard(); /* Tegner tastaturet*/
+            updateScore(); /* Viser poengene*/
+            console.log(`Riktig ord er: ${state.secret}`); /*Skriver ut det hemmelige ordet til consolen*/
+        }
+
+        /* Registrerer tastetrykk og sender dem til handleKeyPress*/
         document.body.onkeydown = (e) => handleKeyPress(e.key.toLowerCase());
-        
-        startup(); // Start spillet
+
+        startup(); 
     </script>
 </body>
 
